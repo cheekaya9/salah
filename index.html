@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بدلها</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
     <style>
@@ -19,6 +19,7 @@
 
         :root {
             --primary: #2BB673;
+            --primary-rgb: 43, 182, 115;
             --secondary: #1E90FF;
             --text-primary: #333;
             --text-secondary: #777;
@@ -509,61 +510,120 @@
         }
 
         #details .details-content {
-            padding: 20px;
-            background: var(--bg-card); /* Changed to card background for better contrast */
+            padding: 30px 24px;
+            background: var(--bg-card);
             position: relative;
-            top: -30px; /* Pull it up a bit more */
-            border-radius: 30px 30px 0 0;
-            box-shadow: 0 -10px 20px rgba(0,0,0,0.05); /* Added top shadow */
-            min-height: calc(100% - 220px);
+            top: -40px;
+            border-radius: 40px 40px 0 0;
+            box-shadow: 0 -15px 30px rgba(0,0,0,0.08);
+            min-height: calc(100% - 210px);
         }
 
         #details h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            color: var(--text-primary);
         }
 
         #details .location {
             color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 20px;
+            font-size: 13px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
+            gap: 6px;
+            opacity: 0.8;
+        }
+
+        #detail-price-container {
+            margin-bottom: 30px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(43, 182, 115, 0.1) 0%, rgba(30, 144, 255, 0.05) 100%);
+            border-radius: 20px;
+            border-right: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #detail-price-container .price-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        #detail-price-container .price-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
         }
 
         #details .details-card {
-            background: var(--bg-card);
-            border-radius: 15px;
-            box-shadow: var(--shadow);
-            padding: 20px;
-            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            background: none;
+            box-shadow: none;
+            padding: 0;
         }
 
         #details .details-item {
-            margin-bottom: 10px;
+            flex: 1;
+            background: var(--bg-body);
+            padding: 16px;
+            border-radius: 20px;
             display: flex;
-            justify-content: space-between;
-            font-size: 14px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            border: 1px solid var(--border-color);
         }
 
-        #details .label {
+        #details .details-item .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
             color: var(--text-secondary);
         }
 
+        #details .details-item .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
         #details .contact-btns {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 40px;
+            padding-bottom: 30px;
         }
 
         #details .btn-contact {
             text-decoration: none;
-            padding: 12px;
-            border-radius: 20px;
+            padding: 14px;
+            border-radius: 16px;
             text-align: center;
-            font-weight: bold;
+            font-weight: 700;
             color: white;
-            font-size: 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+
+        #details .btn-contact:active {
+            transform: scale(0.95);
         }
 
         #details .btn-call {
@@ -632,10 +692,11 @@
             justify-content: center;
             align-items: center;
             background: var(--bg-body);
-            transition: height 0.2s;
-            font-size: 14px;
+            transition: height 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 13px;
             color: var(--primary);
-            font-weight: bold;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
         }
 
         #loading-more {
@@ -669,17 +730,46 @@
             justify-content: center;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             flex: 1;
+            position: relative;
+        }
+
+        .nav-item:active {
+            transform: scale(0.9);
         }
 
         .nav-item.active {
             color: var(--primary);
         }
 
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            bottom: 5px;
+            left: 15%;
+            right: 15%;
+            background: var(--primary);
+            opacity: 0.1;
+            border-radius: 12px;
+            z-index: -1;
+            animation: navActiveGlow 0.4s ease;
+        }
+
+        @keyframes navActiveGlow {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 0.1; }
+        }
+
         .nav-item .icon {
             font-size: 22px;
             margin-bottom: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.active .icon {
+            transform: translateY(-2px);
         }
 
         .nav-item span {
@@ -741,17 +831,236 @@
         .amenity-tag {
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: var(--bg-body);
-            padding: 8px 12px;
-            border-radius: 10px;
+            gap: 8px;
+            background: rgba(var(--primary-rgb), 0.05);
+            padding: 10px 16px;
+            border-radius: 12px;
             font-size: 12px;
-            border: 1px solid var(--border-color);
+            font-weight: 600;
+            border: 1px solid rgba(var(--primary-rgb), 0.1);
             color: var(--text-primary);
         }
 
         .amenity-tag span {
-            font-size: 16px;
+            font-size: 18px;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-available { background: rgba(43, 182, 115, 0.1); color: var(--primary); }
+        .status-sold { background: rgba(255, 71, 87, 0.1); color: #ff4757; }
+        .status-exchanged { background: rgba(30, 144, 255, 0.1); color: var(--secondary); }
+        .status-reserved { background: rgba(255, 165, 0, 0.1); color: orange; }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Chat UI */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 60px);
+            background: var(--bg-body);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message .msg-time {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 4px;
+            align-self: flex-end;
+        }
+
+        .message.received .msg-time {
+            color: var(--text-secondary);
+        }
+
+        .message.sent .msg-time {
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .read-status {
+            font-size: 12px;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 10px rgba(43, 182, 115, 0.2);
+        }
+
+        /* Typing Indicator */
+        #typing-indicator {
+            padding: 10px 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: none;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 2px;
+        }
+
+        .typing-dots span {
+            width: 4px;
+            height: 4px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typingDot 1s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingDot {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .chat-input-area {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 14px;
+            outline: none;
+            color: var(--text-primary);
+        }
+
+        .btn-send {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: none;
+        }
+
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .conversation-item:active {
+            background: var(--bg-body);
+        }
+
+        .chat-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -769,7 +1078,7 @@
         <div class="bottom-nav" id="main-nav">
             <div class="nav-item active" onclick="goHome()" id="nav-home">
                 <span class="icon">🏠</span>
-                <span>الرئيسية</span>
+                <span>استكشاف</span>
             </div>
             <div class="nav-item" id="nav-profile" onclick="showScreen('auth')">
                 <span class="icon">👤</span>
@@ -801,7 +1110,7 @@
 
                 <div id="auth-form">
                     <div class="input-group">
-                        <input type="email" id="email" placeholder="البريد الإلكتروني">
+                        <input type="tel" id="email" placeholder="رقم الموبايل (مثال: 010...)">
                     </div>
                     <div class="input-group password-container">
                         <input type="password" id="password" placeholder="كلمة المرور">
@@ -816,7 +1125,7 @@
                 <div id="user-profile" style="display: none; width: 100%;">
                     <div style="background: var(--bg-body); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--border-color);">
                         <div style="margin-bottom: 15px;">
-                            <label style="display: block; color: var(--text-secondary); font-size: 12px; margin-bottom: 5px;">البريد الإلكتروني</label>
+                            <label style="display: block; color: var(--text-secondary); font-size: 12px; margin-bottom: 5px;">رقم الموبايل</label>
                             <div id="prof-email" style="font-weight: 600;"></div>
                         </div>
                         <div style="margin-bottom: 15px; position: relative;">
@@ -864,7 +1173,7 @@
 
         <!-- Home Screen -->
         <div class="screen with-nav" id="home">
-            <div id="ptr-indicator">جاري التحديث... 🔄</div>
+            <div id="ptr-indicator"></div>
             <div class="header">
                 <span class="title">القاهرة</span>
                 <span class="search-icon" onclick="document.getElementById('search-input').focus()">🔍</span>
@@ -879,8 +1188,29 @@
                 <div class="search-container" style="display: flex; align-items: center; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 12px; padding: 8px 12px; margin-bottom: 12px;">
                     <span style="color: var(--text-secondary);">🔍</span>
                     <input type="text" id="search-input" placeholder="ابحث بالعنوان أو الوصف..." style="background: transparent; border: none; outline: none; margin-right: 10px; width: 100%; color: var(--text-primary); font-size: 14px;" oninput="debounceLoadData()">
+                    <span onclick="toggleAdvancedSearch()" id="adv-search-toggle" style="cursor: pointer; padding: 4px; border-radius: 8px; font-size: 18px; color: var(--primary);">⚙️</span>
                 </div>
                 
+                <!-- Advanced Search Section -->
+                <div id="advanced-search-box" style="display: none; padding: 10px 0; border-top: 1px solid var(--border-color); margin-top: 10px; animation: fadeIn 0.3s ease;">
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <input type="number" id="filter-min-price" placeholder="أقل سعر" oninput="debounceLoadData()" style="flex: 1; padding: 8px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-size: 13px;">
+                        <input type="number" id="filter-max-price" placeholder="أعلى سعر" oninput="debounceLoadData()" style="flex: 1; padding: 8px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-size: 13px;">
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <input type="number" id="filter-min-area" placeholder="أقل مساحة" oninput="debounceLoadData()" style="flex: 1; padding: 8px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-size: 13px;">
+                        <input type="number" id="filter-max-area" placeholder="أعلى مساحة" oninput="debounceLoadData()" style="flex: 1; padding: 8px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-size: 13px;">
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <select id="filter-sort" onchange="resetAndLoadData()" style="width: 100%; padding: 8px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-size: 13px;">
+                            <option value="newest">الأحدث أولاً</option>
+                            <option value="price_asc">السعر: من الأقل للأعلى</option>
+                            <option value="price_desc">السعر: من الأعلى للأقل</option>
+                            <option value="area_desc">المساحة: الأكبر أولاً</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div style="display: flex; gap: 8px; margin-bottom: 15px;">
                     <select id="filter-gov" onchange="resetAndLoadData()" style="flex: 1; padding: 8px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-size: 13px;">
                         <option value="">كل المحافظات</option>
@@ -895,7 +1225,7 @@
                         <input type="checkbox" id="filter-balcony" onchange="resetAndLoadData()" style="width: auto;"> عقار للبيع
                     </label>
                     <label style="display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); cursor: pointer;">
-                        <input type="checkbox" id="filter-parking" onchange="resetAndLoadData()" style="width: auto;"> عقار للايجار
+                        <input type="checkbox" id="filter-parking" onchange="resetAndLoadData()" style="width: auto;"> للبدل
                     </label>
                     <label style="display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); cursor: pointer;">
                         <input type="checkbox" id="filter-furnished" onchange="resetAndLoadData()" style="width: auto;"> مفروش
@@ -965,6 +1295,16 @@
                     <textarea id="notes" placeholder="وصف إضافي عن العقار..."></textarea>
                 </div>
 
+                <div style="margin-bottom: 20px;" id="status-selection-group">
+                    <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--text-secondary);">حالة العقار:</h4>
+                    <select id="property-status" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); font-size: 14px;">
+                        <option value="available">متاح</option>
+                        <option value="sold">تم البيع</option>
+                        <option value="exchanged">تم التبديل</option>
+                        <option value="reserved">محجوز</option>
+                    </select>
+                </div>
+
                 <div style="margin-bottom: 20px;">
                     <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--text-secondary);">نوع العقار والمميزات:</h4>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -972,7 +1312,7 @@
                             <input type="checkbox" id="feat-balcony" style="width: auto; margin: 0;"> عقار للبيع
                         </label>
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
-                            <input type="checkbox" id="feat-parking" style="width: auto; margin: 0;"> عقار للايجار
+                            <input type="checkbox" id="feat-parking" style="width: auto; margin: 0;"> للبدل
                         </label>
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
                             <input type="checkbox" id="feat-furnished" style="width: auto; margin: 0;"> مفروش
@@ -1003,22 +1343,22 @@
                     <span id="detail-location"></span>
                 </div>
 
-                <div id="detail-price-container" style="margin-top: 15px; padding: 12px; background: rgba(43, 182, 115, 0.1); border-radius: 12px; border: 1px solid var(--primary); display: none; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">💰</span>
+                <div id="detail-price-container" style="display: none;">
+                    <span style="font-size: 24px;">💰</span>
                     <div>
-                        <div style="font-size: 11px; color: var(--text-secondary);">السعر المطلوب</div>
-                        <div id="detail-price" style="font-size: 18px; font-weight: 700; color: var(--primary);"></div>
+                        <div class="price-label">السعر المطلوب</div>
+                        <div id="detail-price" class="price-value"></div>
                     </div>
                 </div>
 
                 <div class="details-card">
                     <div class="details-item">
                         <span class="label">المساحة</span>
-                        <span id="detail-area"></span>
+                        <span id="detail-area" class="value"></span>
                     </div>
                     <div class="details-item">
                         <span class="label">عدد الغرف</span>
-                        <span id="detail-rooms"></span>
+                        <span id="detail-rooms" class="value"></span>
                     </div>
                 </div>
 
@@ -1035,10 +1375,44 @@
                 </div>
 
                 <div class="contact-btns">
-                    <a href="#" class="btn-contact btn-call" id="call-btn">📞 اتصال هاتفي</a>
-                    <a href="#" class="btn-contact btn-whatsapp" id="whatsapp-btn">💬 تواصل واتساب</a>
-                    <p style="text-align: center; color: var(--text-secondary); margin-top: 15px;" id="no-contact-text">
-                        رقم التواصل غير متوفر</p>
+                    <a href="#" class="btn-contact btn-call" id="call-btn">📞 مكالمة</a>
+                    <a href="#" class="btn-contact btn-whatsapp" id="whatsapp-btn">💬 واتساب</a>
+                    <button class="btn-contact" id="chat-btn" style="background: var(--primary); border: none; cursor: pointer;">💬 دردشة مباشرة</button>
+                </div>
+                <p style="text-align: center; color: var(--text-secondary); margin-top: 15px; font-size: 11px; display: none;" id="no-contact-text">تواصل مع المعلن عبر الواتساب أو الهاتف</p>
+            </div>
+        </div>
+
+        <!-- Chat List Screen -->
+        <div class="screen with-nav" id="chat-list">
+            <div class="header">
+                <span class="title">المحادثات</span>
+            </div>
+            <div id="conversations-container" style="height: calc(100% - 60px); overflow-y: auto;">
+                <!-- Conversations will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Chat Room Screen -->
+        <div class="screen" id="chat-room">
+            <div class="header">
+                <span class="btn-back-header" id="chat-back-btn">➔</span>
+                <span class="title" id="chat-with-name">المحادثة</span>
+            </div>
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages-box">
+                    <!-- Messages will be loaded here -->
+                </div>
+                <!-- Typing Indicator -->
+                <div id="typing-indicator">
+                    <span>يكتب الآن</span>
+                    <div class="typing-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" id="message-input" placeholder="اكتب رسالة...">
+                    <button class="btn-send" id="send-message-btn">✈️</button>
                 </div>
             </div>
         </div>
@@ -1047,7 +1421,14 @@
         <div class="bottom-nav" id="main-nav">
             <div class="nav-item active" id="nav-home" onclick="goHome()">
                 <div class="icon">🏠</div>
-                <span>الرئيسية</span>
+                <span>استكشاف</span>
+            </div>
+            <div class="nav-item" id="nav-chat" onclick="showChatList()">
+                <div class="icon" style="position: relative;">
+                    💬
+                    <span id="chat-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: #ff4757; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px;">0</span>
+                </div>
+                <span>الرسائل</span>
             </div>
             <div class="nav-item" id="nav-add" onclick="goAdd()">
                 <div class="icon">➕</div>
@@ -1081,6 +1462,14 @@
         let hasMore = true;
         let searchTimeout = null;
 
+        // Chat Globals
+        let activeChatReceiverId = null;
+        let activeChatPropertyId = null;
+        let messageSubscription = null;
+        let globalChatSubscription = null;
+        let unreadCount = 0;
+        let notificationsEnabled = false;
+
         function debounceLoadData() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
@@ -1092,6 +1481,18 @@
             currentPage = 0;
             hasMore = true;
             loadData(false);
+        }
+
+        function toggleAdvancedSearch() {
+            const box = document.getElementById("advanced-search-box");
+            const toggle = document.getElementById("adv-search-toggle");
+            if (box.style.display === "none") {
+                box.style.display = "block";
+                toggle.style.background = "rgba(43, 182, 115, 0.1)";
+            } else {
+                box.style.display = "none";
+                toggle.style.background = "transparent";
+            }
         }
 
         // Function to show/hide loading overlay
@@ -1152,11 +1553,12 @@
             
             if (screenId === "home") document.getElementById("nav-home")?.classList.add("active");
             if (screenId === "add") document.getElementById("nav-add")?.classList.add("active");
+            if (screenId === "chat-list") document.getElementById("nav-chat")?.classList.add("active");
             if (screenId === "auth") document.getElementById("nav-profile")?.classList.add("active");
 
-            // Nav bar visibility (hidden on splash and details)
+            // Nav bar visibility (hidden on splash, details, and chat-room)
             const nav = document.getElementById("main-nav");
-            if (screenId === "splash" || screenId === "details") {
+            if (screenId === "splash" || screenId === "details" || screenId === "chat-room") {
                 if (nav) nav.style.display = "none";
             } else {
                 if (nav) nav.style.display = "flex";
@@ -1175,25 +1577,40 @@
                 
                 // Pull to refresh logic
                 let touchStart = 0;
+                const ptr = document.getElementById("ptr-indicator");
+                const REFRESH_THRESHOLD = 60;
+
                 homeScreen.ontouchstart = (e) => {
-                    if (homeScreen.scrollTop === 0) touchStart = e.touches[0].pageY;
+                    touchStart = e.touches[0].pageY;
                 };
-                
+
                 homeScreen.ontouchmove = (e) => {
                     const touchMove = e.touches[0].pageY;
-                    if (homeScreen.scrollTop === 0 && touchMove > touchStart) {
-                        const ptr = document.getElementById("ptr-indicator");
-                        const diff = Math.min(touchMove - touchStart, 60);
-                        if (diff > 10) ptr.style.height = diff + "px";
+                    const diff = touchMove - touchStart;
+
+                    if (homeScreen.scrollTop === 0 && diff > 0) {
+                        const height = Math.min(diff * 0.4, 100); 
+                        ptr.style.height = height + "px";
+                        
+                        if (height >= REFRESH_THRESHOLD) {
+                            ptr.innerText = "اترك للتحديث... 🔄";
+                        } else {
+                            ptr.innerText = "اسحب للتحديث... ↓";
+                        }
                     }
                 };
-                
+
                 homeScreen.ontouchend = (e) => {
-                    const ptr = document.getElementById("ptr-indicator");
-                    if (parseInt(ptr.style.height) >= 50) {
-                        loadData(false);
+                    const currentHeight = parseInt(ptr.style.height) || 0;
+                    if (currentHeight >= REFRESH_THRESHOLD) {
+                        ptr.style.height = "50px";
+                        ptr.innerText = "جاري التحديث... ⏳";
+                        loadData(false).then(() => {
+                            ptr.style.height = "0px";
+                        });
+                    } else {
+                        ptr.style.height = "0px";
                     }
-                    ptr.style.height = "0px";
                 };
             }
         }
@@ -1201,6 +1618,356 @@
         function goHome() {
             showScreen("home");
             loadData(false);
+        }
+
+        // --- Chat Logic ---
+        async function showChatList() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return showScreen("auth");
+            
+            showScreen("chat-list");
+            loadConversations();
+        }
+
+        async function loadConversations() {
+            const container = document.getElementById("conversations-container");
+            container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-secondary);">جاري جلب المحادثات... ⏳</div>`;
+            
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                const userId = session.user.id;
+
+                // Simple implementation: Fetch unique senders/receivers from messages
+                // You would typically have a conversations table or more complex query
+                const { data, error } = await supabaseClient
+                    .from('messages')
+                    .select('sender_id, receiver_id, content, created_at, property_id')
+                    .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<div style="text-align: center; padding: 60px; color: var(--text-secondary);">
+                        <div style="font-size: 40px; margin-bottom: 15px;">💬</div>
+                        <p>لا يوجد محادثات بعد.</p>
+                        <p style="font-size: 12px; margin-top: 10px;">تواصل مع المعلنين لبدء الدردشة!</p>
+                    </div>`;
+                    return;
+                }
+
+                // Group by other user id
+                const groups = {};
+                data.forEach(msg => {
+                    const otherId = msg.sender_id === userId ? msg.receiver_id : msg.sender_id;
+                    if (!groups[otherId]) {
+                        groups[otherId] = msg;
+                    }
+                });
+
+                container.innerHTML = "";
+                Object.keys(groups).forEach(otherId => {
+                    const latest = groups[otherId];
+                    const item = document.createElement("div");
+                    item.className = "conversation-item";
+                    item.onclick = () => openChatRoom(otherId, latest.property_id);
+                    
+                    // Displaying first part of ID as fallback for name
+                    const nameLabel = `مستخدم ${otherId.substring(0, 4)}`; 
+                    
+                    item.innerHTML = `
+                        <div class="chat-avatar">${nameLabel.substring(0, 1).toUpperCase()}</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 4px;">${nameLabel}</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">
+                                ${latest.content}
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary);">
+                            ${new Date(latest.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+
+            } catch (err) {
+                console.error("Load conversations error:", err);
+                container.innerHTML = `<div style="text-align: center; padding: 40px; color: #ff4757;">حدث خطأ في جلب المحادثات.</div>`;
+            }
+        }
+
+        async function openChatRoom(otherId, propertyId) {
+            activeChatReceiverId = otherId;
+            activeChatPropertyId = propertyId;
+            
+            const chatBox = document.getElementById("chat-messages-box");
+            chatBox.innerHTML = "";
+            document.getElementById("chat-with-name").innerText = `محادثة ${otherId.substring(0, 4)}`;
+            
+            showScreen("chat-room");
+            loadMessages();
+            markMessagesAsRead(otherId);
+            subscribeToMessages();
+            
+            // Setup back button
+            document.getElementById("chat-back-btn").onclick = () => {
+                if (messageSubscription) messageSubscription.unsubscribe();
+                showChatList();
+            };
+
+            // Setup send button
+            const sendBtn = document.getElementById("send-message-btn");
+            const input = document.getElementById("message-input");
+            
+            sendBtn.onclick = async () => {
+                const content = input.value.trim();
+                if (!content) return;
+                
+                input.value = "";
+                await sendMessage(content);
+            };
+
+            input.onkeypress = (e) => {
+                if (e.key === 'Enter') sendBtn.click();
+            };
+
+            // Typing Indicator Logic
+            let typingTimeout = null;
+            input.oninput = () => {
+                if (messageSubscription) {
+                    messageSubscription.track({ is_typing: true });
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => {
+                        messageSubscription.track({ is_typing: false });
+                    }, 2000);
+                }
+            };
+        }
+
+        async function markMessagesAsRead(senderId) {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) return;
+                
+                const { data: updated, error } = await supabaseClient
+                    .from('messages')
+                    .update({ is_read: true })
+                    .eq('sender_id', senderId)
+                    .eq('receiver_id', session.user.id)
+                    .eq('is_read', false)
+                    .select();
+
+                if (!error && updated) {
+                    // Recalculate accurately or just decrement if count matches
+                    // For simplicity, let's just re-fetch count to be safe
+                    initGlobalChatSubscription();
+                }
+            } catch (err) {
+                console.error("Mark read error:", err);
+            }
+        }
+
+        async function loadMessages() {
+            const chatBox = document.getElementById("chat-messages-box");
+            
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                const userId = session.user.id;
+
+                const { data, error } = await supabaseClient
+                    .from('messages')
+                    .select('*')
+                    .or(`and(sender_id.eq.${userId},receiver_id.eq.${activeChatReceiverId}),and(sender_id.eq.${activeChatReceiverId},receiver_id.eq.${userId})`)
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+
+                chatBox.innerHTML = "";
+                data.forEach(msg => {
+                    renderMessage(msg, userId);
+                });
+                
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (err) {
+                console.error("Load messages error:", err);
+            }
+        }
+
+        function renderMessage(msg, userId) {
+            const chatBox = document.getElementById("chat-messages-box");
+            const isSent = msg.sender_id === userId;
+            const div = document.createElement("div");
+            div.className = `message ${isSent ? 'sent' : 'received'}`;
+            
+            const timeStr = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const statusIcon = isSent ? (msg.is_read ? '✓✓' : '✓') : '';
+            
+            div.innerHTML = `
+                <span>${msg.content}</span>
+                <span class="msg-time">
+                    ${timeStr} 
+                    <span class="read-status">${statusIcon}</span>
+                </span>
+            `;
+            chatBox.appendChild(div);
+        }
+
+        async function sendMessage(content) {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                const userId = session.user.id;
+
+                const { error } = await supabaseClient
+                    .from('messages')
+                    .insert([{
+                        sender_id: userId,
+                        receiver_id: activeChatReceiverId,
+                        property_id: activeChatPropertyId,
+                        content: content,
+                        is_read: false
+                    }]);
+
+                if (error) throw error;
+            } catch (err) {
+                console.error("Send message error:", err);
+                alert("فشل إرسال الرسالة.");
+            }
+        }
+
+        function subscribeToMessages() {
+            if (messageSubscription) messageSubscription.unsubscribe();
+
+            messageSubscription = supabaseClient
+                .channel(`chat:${activeChatReceiverId}`)
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
+                    const msg = payload.new;
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    const userId = session.user.id;
+
+                    const isRelevant = 
+                        (msg.sender_id === userId && msg.receiver_id === activeChatReceiverId) ||
+                        (msg.sender_id === activeChatReceiverId && msg.receiver_id === userId);
+
+                    if (isRelevant) {
+                        renderMessage(msg, userId);
+                        const chatBox = document.getElementById("chat-messages-box");
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                        
+                        if (msg.receiver_id === userId) {
+                            markMessagesAsRead(msg.sender_id);
+                        }
+                    }
+                })
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, async (payload) => {
+                    const msg = payload.new;
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    const userId = session.user.id;
+
+                    // Update read receipts for sent messages
+                    if (msg.sender_id === userId && msg.receiver_id === activeChatReceiverId && msg.is_read) {
+                        loadMessages(); // Simplest way to update all checkmarks
+                    }
+                })
+                .on('presence', { event: 'sync' }, () => {
+                    const state = messageSubscription.presenceState();
+                    const otherTyping = Object.values(state).some(p => p[0]?.is_typing && p[0]?.user_id !== currentUserId);
+                    document.getElementById("typing-indicator").style.display = otherTyping ? "flex" : "none";
+                })
+                .subscribe(async (status) => {
+                    if (status === 'SUBSCRIBED') {
+                        await messageSubscription.track({ user_id: currentUserId, is_typing: false });
+                    }
+                });
+        }
+
+        // --- Notifications & Global Chat Logic ---
+        async function initNotifications() {
+            if (!("Notification" in window)) return;
+            
+            if (Notification.permission === "granted") {
+                notificationsEnabled = true;
+            } else if (Notification.permission !== "denied") {
+                const permission = await Notification.requestPermission();
+                notificationsEnabled = (permission === "granted");
+            }
+        }
+
+        async function initGlobalChatSubscription() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return;
+            
+            const userId = session.user.id;
+            
+            // Initial fetch of unread count
+            const { count, error } = await supabaseClient
+                .from('messages')
+                .select('*', { count: 'exact', head: true })
+                .eq('receiver_id', userId)
+                .eq('is_read', false);
+            
+            if (!error) {
+                unreadCount = count || 0;
+                updateUnreadBadge();
+            }
+
+            if (globalChatSubscription) globalChatSubscription.unsubscribe();
+
+            globalChatSubscription = supabaseClient
+                .channel('global-chat-notifications')
+                .on('postgres_changes', { 
+                    event: 'INSERT', 
+                    schema: 'public', 
+                    table: 'messages',
+                    filter: `receiver_id=eq.${userId}`
+                }, (payload) => {
+                    const msg = payload.new;
+                    
+                    // Increment unread count only if not in the active chat with this person
+                    if (activeChatReceiverId !== msg.sender_id) {
+                        unreadCount++;
+                        updateUnreadBadge();
+                        showPushNotification("رسالة جديدة 💬", msg.content, msg.sender_id, msg.property_id);
+                    }
+                })
+                .subscribe();
+        }
+
+        function updateUnreadBadge() {
+            const badge = document.getElementById("chat-badge");
+            if (unreadCount > 0) {
+                badge.innerText = unreadCount > 9 ? "9+" : unreadCount;
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+        }
+
+        function showPushNotification(title, body, senderId, propertyId) {
+            // Local App Toast/Vibration could follow...
+            
+            // Browser Notification
+            if (notificationsEnabled) {
+                const n = new Notification(title, {
+                    body: body,
+                    icon: 'https://ais-dev-7nakfs7ogivj2rsi4u44q2-370906152922.europe-west2.run.app/favicon.ico' // Default app favicon
+                });
+                n.onclick = () => {
+                    window.focus();
+                    openChatRoom(senderId, propertyId);
+                    n.close();
+                };
+            }
+        }
+
+        async function startChatFromDetails(receiverId, propertyId) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return showScreen("auth");
+            
+            if (session.user.id === receiverId) {
+                return alert("لا يمكنك مراسلة نفسك!");
+            }
+
+            openChatRoom(receiverId, propertyId);
         }
 
         async function goAdd() {
@@ -1226,6 +1993,12 @@
                 document.getElementById("feat-balcony").checked = false;
                 document.getElementById("feat-parking").checked = false;
                 document.getElementById("feat-furnished").checked = false;
+                document.getElementById("property-status").value = "available";
+                document.getElementById("status-selection-group").style.display = "none"; // Hide on ADD, only show on EDIT or vice-versa?
+                // Actually, and "Add" property should usually be available. 
+                // Let's always show it though, as maybe they are adding something already sold/reserved (less likely but possible).
+                // But the request is "Track status", so maybe they want to change it later.
+                document.getElementById("status-selection-group").style.display = "block";
 
                 showScreen("add");
             } else {
@@ -1347,17 +2120,45 @@
         }
 
         async function register() {
-            const email = document.getElementById("email").value;
+            const phone = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-            if (!email || !password) return alert("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
+            if (!phone || !password) return alert("الرجاء إدخال رقم الموبايل وكلمة المرور");
+
+            // For phone authentication, Supabase requires international format (e.g., +20...)
+            // If the user enters a 11-digit Egyptian number starting with 0, we can prepend +20
+            let formattedPhone = phone;
+            if (phone.startsWith('0') && (phone.length === 11 || phone.length === 10)) {
+                formattedPhone = '+20' + phone.substring(1);
+            } else if (!phone.startsWith('+')) {
+                // Assuming default is Egypt if no +
+                formattedPhone = '+20' + phone;
+            }
 
             showLoading(true);
             try {
-                const { error } = await supabaseClient.auth.signUp({ email, password });
+                // Note: Phone signup usually requires SMS provider setup in Supabase
+                const { error } = await supabaseClient.auth.signUp({ 
+                    phone: formattedPhone, 
+                    password: password 
+                });
+                
                 if (error) {
-                    alert("خطأ في إنشاء الحساب: " + error.message);
+                    // Fallback hack: if the user doesn't have phone auth enabled, 
+                    // we can use the digit string as an email to keep it working
+                    console.log("Phone auth failed, trying fallback as email");
+                    const { error: emailError } = await supabaseClient.auth.signUp({ 
+                        email: `${phone}@mobile.com`, 
+                        password 
+                    });
+                    
+                    if (emailError) {
+                        alert("خطأ في إنشاء الحساب: " + emailError.message);
+                    } else {
+                        alert("تم إنشاء الحساب بنجاح (وضع التوافق)! يمكنك تسجيل الدخول الآن.");
+                        showScreen("auth");
+                    }
                 } else {
-                    alert("تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.");
+                    alert("تم إنشاء الحساب بنجاح! تأكد من تفعيل رقم الهاتف إذا تطلب الأمر.");
                     showScreen("auth");
                 }
             } catch (err) {
@@ -1369,16 +2170,41 @@
         }
 
         async function login() {
-            const email = document.getElementById("email").value;
+            const phone = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-            if (!email || !password) return alert("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
+            if (!phone || !password) return alert("الرجاء إدخال رقم الموبايل وكلمة المرور");
+
+            let formattedPhone = phone;
+            if (phone.startsWith('0') && (phone.length === 11 || phone.length === 10)) {
+                formattedPhone = '+20' + phone.substring(1);
+            } else if (!phone.startsWith('+')) {
+                formattedPhone = '+20' + phone;
+            }
 
             showLoading(true);
             try {
-                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                const { error } = await supabaseClient.auth.signInWithPassword({ 
+                    phone: formattedPhone, 
+                    password: password 
+                });
+                
                 if (error) {
-                    alert("بيانات الدخول غير صحيحة!");
+                    // Try fallback
+                    const { error: emailError } = await supabaseClient.auth.signInWithPassword({ 
+                        email: `${phone}@mobile.com`, 
+                        password 
+                    });
+                    
+                    if (emailError) {
+                        alert("بيانات الدخول غير صحيحة!");
+                    } else {
+                        initNotifications();
+                        initGlobalChatSubscription();
+                        goHome();
+                    }
                 } else {
+                    initNotifications();
+                    initGlobalChatSubscription();
                     goHome();
                 }
             } catch (err) {
@@ -1438,8 +2264,10 @@
                         userProfile.style.display = "block";
                         
                         // Populate details
-                        if (profEmail) profEmail.innerText = session.user.email;
-                        if (profPhone) profPhone.innerText = session.user.user_metadata?.phone || "غير مسجل";
+                        if (profEmail) {
+                            profEmail.innerText = session.user.phone || session.user.email?.split('@')[0] || "مستخدم";
+                        }
+                        if (profPhone) profPhone.innerText = session.user.user_metadata?.phone || session.user.phone || "غير مسجل";
 
                         // Load User's Properties
                         loadUserProperties(currentUserId);
@@ -1463,6 +2291,12 @@
                 const filterFurnished = document.getElementById("filter-furnished").checked;
                 const filterGov = document.getElementById("filter-gov").value;
                 const filterReg = document.getElementById("filter-region").value;
+                
+                const minPrice = document.getElementById("filter-min-price").value;
+                const maxPrice = document.getElementById("filter-max-price").value;
+                const minArea = document.getElementById("filter-min-area").value;
+                const maxArea = document.getElementById("filter-max-area").value;
+                const sortType = document.getElementById("filter-sort").value;
 
                 if (searchTerm) {
                     query = query.or(`title.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
@@ -1483,7 +2317,22 @@
                     query = query.eq('is_furnished', true);
                 }
 
-                query = query.order('created_at', { ascending: false });
+                // Advanced range filters
+                if (minPrice) query = query.gte('price', parseInt(minPrice));
+                if (maxPrice) query = query.lte('price', parseInt(maxPrice));
+                if (minArea) query = query.gte('area', parseInt(minArea));
+                if (maxArea) query = query.lte('area', parseInt(maxArea));
+
+                // Sort logic
+                if (sortType === "price_asc") {
+                    query = query.order('price', { ascending: true, nullsFirst: false });
+                } else if (sortType === "price_desc") {
+                    query = query.order('price', { ascending: false, nullsFirst: false });
+                } else if (sortType === "area_desc") {
+                    query = query.order('area', { ascending: false });
+                } else {
+                    query = query.order('created_at', { ascending: false });
+                }
 
                 const { data, error } = await query.range(from, to);
                 
@@ -1548,12 +2397,21 @@
                 
                 data.forEach(p => {
                     const imageUrl = p.image_url ? p.image_url.split(',')[0] : 'https://img.icons8.com/plasticine/200/home.png';
+                    const statusMap = {
+                        'available': { text: 'متاح', class: 'status-available' },
+                        'sold': { text: 'تم البيع', class: 'status-sold' },
+                        'exchanged': { text: 'تم التبديل', class: 'status-exchanged' },
+                        'reserved': { text: 'محجوز', class: 'status-reserved' }
+                    };
+                    const statusInfo = statusMap[p.status] || statusMap['available'];
+
                     const cardHtml = `
-                        <div class="card" onclick="viewProperty('${p.id}')" style="margin-bottom: 20px; background: var(--bg-card); border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); cursor: pointer; border: 1px solid var(--border-color);">
+                        <div class="card" onclick="viewProperty('${p.id}')" style="margin-bottom: 20px; background: var(--bg-card); border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); cursor: pointer; border: 1px solid var(--border-color); position: relative;">
                             <img src="${imageUrl}" class="card-img" alt="${p.title}" style="width: 100%; height: 180px; object-fit: cover;" referrerPolicy="no-referrer" onerror="this.src='https://img.icons8.com/plasticine/200/home.png'">
+                            <span class="status-badge ${statusInfo.class}" style="position: absolute; top: 10px; left: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">${statusInfo.text}</span>
                             <div class="card-content" style="padding: 15px;">
                                 <h4 style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <span style="font-weight: bold; color: var(--text-primary);">${p.title}</span>
+                                    <span style="font-weight: bold; color: var(--text-primary); text-align: right;">${p.title}</span>
                                     <span style="font-size: 11px; color: var(--primary);">📍 ${p.location}</span>
                                 </h4>
                                 <div style="display: flex; gap: 10px; font-size: 12px; color: var(--text-secondary);">
@@ -1587,11 +2445,19 @@
             data.forEach(p => {
                 const imageUrl = p.image_url ? p.image_url.split(',')[0] : 'https://img.icons8.com/plasticine/200/home.png';
                 const isOwner = currentUserId && p.user_id === currentUserId;
+                const statusMap = {
+                    'available': { text: 'متاح', class: 'status-available' },
+                    'sold': { text: 'تم البيع', class: 'status-sold' },
+                    'exchanged': { text: 'تم التبديل', class: 'status-exchanged' },
+                    'reserved': { text: 'محجوز', class: 'status-reserved' }
+                };
+                const statusInfo = statusMap[p.status] || statusMap['available'];
 
                 const cardHtml = `
                     <div class="property-card" onclick="viewProperty('${p.id}')">
                         <div class="image-container">
                             <img src="${imageUrl}" alt="${p.title}" referrerPolicy="no-referrer" onerror="this.src='https://img.icons8.com/plasticine/200/home.png'">
+                            <span class="status-badge ${statusInfo.class}" style="position: absolute; top: 10px; left: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">${statusInfo.text}</span>
                             ${isOwner ? '<span class="match-badge">90%</span>' : ''}
                         </div>
                         <div class="content">
@@ -1601,7 +2467,7 @@
                             </h4>
                             <div class="details-info">
                                 <span style="color: var(--primary); font-weight: bold; margin-bottom: 5px; display: block; display: flex; justify-content: space-between; align-items: center;">
-                                    <span>${p.has_balcony ? 'للبيع' : (p.has_parking ? 'للإيجار' : '')}</span>
+                                    <span>${p.has_balcony ? 'للبيع' : (p.has_parking ? 'للبدل' : '')}</span>
                                     ${p.price ? `<span style="font-size: 13px; background: rgba(43, 182, 115, 0.1); padding: 2px 8px; border-radius: 5px;">${Number(p.price).toLocaleString()} ج.م</span>` : ''}
                                 </span>
                                 <div>
@@ -1695,6 +2561,7 @@
                     has_balcony: document.getElementById("feat-balcony").checked,
                     has_parking: document.getElementById("feat-parking").checked,
                     is_furnished: document.getElementById("feat-furnished").checked,
+                    status: document.getElementById("property-status").value || 'available',
                     user_id: userId
                 };
 
@@ -1835,6 +2702,8 @@
             document.getElementById("feat-balcony").checked = p.has_balcony || false;
             document.getElementById("feat-parking").checked = p.has_parking || false;
             document.getElementById("feat-furnished").checked = p.is_furnished || false;
+            document.getElementById("property-status").value = p.status || "available";
+            document.getElementById("status-selection-group").style.display = "block";
 
             // Image hint
             document.getElementById("upload-hint").innerText = "يمكنك اختيار صورة جديدة لتغييرها";
@@ -1852,7 +2721,17 @@
 
             // Fill detail screen fields
             document.getElementById("detail-image").src = imageUrl;
-            document.getElementById("detail-title").innerText = p.title;
+            
+            // Status Badge in details
+            const statusMap = {
+                'available': { text: 'متاح', class: 'status-available' },
+                'sold': { text: 'تم البيع', class: 'status-sold' },
+                'exchanged': { text: 'تم التبديل', class: 'status-exchanged' },
+                'reserved': { text: 'محجوز', class: 'status-reserved' }
+            };
+            const statusInfo = statusMap[p.status] || statusMap['available'];
+            document.getElementById("detail-title").innerHTML = `${p.title} <span class="status-badge ${statusInfo.class}" style="vertical-align: middle; margin-right: 10px;">${statusInfo.text}</span>`;
+            
             document.getElementById("detail-location").innerText = `${p.governorate || ''} ${p.region ? '- ' + p.region : ''} ${p.location ? '(' + p.location + ')' : ''}`;
             document.getElementById("detail-area").innerText = `${p.area} م²`;
             document.getElementById("detail-rooms").innerText = `${p.rooms} غرف`;
@@ -1884,11 +2763,11 @@
             let hasAnyFeat = false;
 
             if (p.has_balcony) {
-                amenitiesList.innerHTML += `<div class="amenity-tag"><span>💰</span> عقار للبيع</div>`;
+                amenitiesList.innerHTML += `<div class="amenity-tag"><span>🏢</span> للبيع</div>`;
                 hasAnyFeat = true;
             }
             if (p.has_parking) {
-                amenitiesList.innerHTML += `<div class="amenity-tag"><span>🔑</span> عقار للايجار</div>`;
+                amenitiesList.innerHTML += `<div class="amenity-tag"><span>🔑</span> للبدل</div>`;
                 hasAnyFeat = true;
             }
             if (p.is_furnished) {
@@ -1901,12 +2780,13 @@
             // Contact section logic
             const callBtn = document.getElementById("call-btn");
             const whatsappBtn = document.getElementById("whatsapp-btn");
+            const chatBtn = document.getElementById("chat-btn");
             const noContactText = document.getElementById("no-contact-text");
 
             if (p.phone) {
                 callBtn.href = `tel:${p.phone}`;
                 
-                const type = p.has_balcony ? 'للبيع' : (p.has_parking ? 'للإيجار' : 'غير محدد');
+                const type = p.has_balcony ? 'للبيع' : (p.has_parking ? 'للبدل' : 'غير محدد');
                 const message = `أهلاً بك، أنا مهتم بعقارك الذي قمت بنشره في تطبيق "بدلها":\n` +
                                 `🏠 العنوان: ${p.title}\n` +
                                 `📍 المكان: ${p.governorate || ''} - ${p.region || ''}\n` +
@@ -1924,6 +2804,11 @@
                 noContactText.style.display = "block";
             }
 
+            // Bind Direct Chat button
+            if (chatBtn) {
+                chatBtn.onclick = () => startChatFromDetails(p.user_id, p.id);
+            }
+
             showScreen("details");
         }
 
@@ -1933,6 +2818,10 @@
                 try {
                     await supabaseClient.auth.getSession();
                     updateFilterOptions();
+                    
+                    // Init Notifications
+                    initNotifications();
+                    initGlobalChatSubscription();
                 } catch (e) {
                     console.error("Session check failed", e);
                 }
