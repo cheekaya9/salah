@@ -241,7 +241,33 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
+            z-index: 2;
         }
+
+        .btn-favorite {
+            position: absolute;
+            top: 45px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #ff4757;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            z-index: 2;
+            border: none;
+        }
+        .btn-favorite.active {
+            background: #ff4757;
+            color: white;
+        }
+        .btn-favorite:hover { transform: scale(1.1); }
 
         .property-card .content {
             padding: 15px;
@@ -863,10 +889,26 @@
             font-size: 22px;
             margin-bottom: 2px;
             transition: transform 0.3s ease;
+            position: relative;
         }
 
         .nav-item.active .icon {
             transform: translateY(-2px);
+        }
+
+        .nav-item .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+            border: 2px solid var(--bg-card);
+            font-weight: bold;
         }
 
         .nav-item span {
@@ -1267,18 +1309,6 @@
         <!-- Theme Toggle -->
         <div class="theme-toggle" id="theme-btn" onclick="toggleTheme()">🌙</div>
 
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav" id="main-nav">
-            <div class="nav-item active" onclick="goHome()" id="nav-home">
-                <span class="icon">🏠</span>
-                <span>استكشاف</span>
-            </div>
-            <div class="nav-item" id="nav-profile" onclick="showScreen('auth')">
-                <span class="icon">👤</span>
-                <span>حسابي</span>
-            </div>
-        </div>
-
         <!-- Splash Screen -->
         <div class="screen active" id="splash">
             <div class="content" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center;">
@@ -1372,7 +1402,14 @@
                     </div>
 
                     <div style="background: var(--bg-body); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--border-color);">
-                        <div style="margin-bottom: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); cursor: pointer;" onclick="showFavorites()">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span style="font-size: 20px;">❤️</span>
+                                <span style="font-weight: 600;">العقارات المحفوظة</span>
+                            </div>
+                            <span style="color: var(--text-secondary);">➔</span>
+                        </div>
+                        <div style="margin-bottom: 15px; margin-top: 15px;">
                             <label style="display: block; color: var(--text-secondary); font-size: 12px; margin-bottom: 5px;">رقم الموبايل</label>
                             <div id="prof-email" style="font-weight: 600;"></div>
                         </div>
@@ -1651,6 +1688,13 @@
                     </div>
                 </div>
 
+                <div id="detail-favorite-container" style="margin-top: 20px;">
+                    <button id="detail-favorite-btn" onclick="toggleFavoriteFromDetails()" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ff4757; background: transparent; color: #ff4757; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s;">
+                        <span class="heart-icon">❤️</span>
+                        <span class="label">حفظ في المفضلة</span>
+                    </button>
+                </div>
+
                 <!-- User Trust Card in Details -->
                 <div style="margin-top: 30px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 15px; display: flex; align-items: center; gap: 15px;">
                     <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; color: white;">👤</div>
@@ -1671,8 +1715,33 @@
                     <a href="#" class="btn-contact btn-whatsapp" id="whatsapp-btn">💬 واتساب</a>
                     <button class="btn-contact" id="chat-btn" style="background: var(--primary); border: none; cursor: pointer;">💬 دردشة مباشرة</button>
                     <button class="btn-contact" id="rate-user-btn" style="background: #f1c40f; border: none; cursor: pointer; color: #1a1a1a;">⭐ تقييم المستخدم</button>
+                    <button class="btn-contact" id="interest-btn" style="background: #a55eea; border: none; cursor: pointer; color: white;">🔄 أنا مهتم بهذا العقار</button>
                 </div>
                 <p style="text-align: center; color: var(--text-secondary); margin-top: 15px; font-size: 11px; display: none;" id="no-contact-text">تواصل مع المعلن عبر الواتساب أو الهاتف</p>
+            </div>
+        </div>
+
+        <!-- Notifications Screen -->
+        <div class="screen with-nav" id="notifications">
+            <div class="header">
+                <span class="title">التنبيهات</span>
+                <span style="font-size: 12px; color: var(--primary); cursor: pointer;" onclick="markAllNotificationsRead()">تحديد الكل كمقروء</span>
+            </div>
+            <div class="content" style="padding: 0;" id="notifications-list">
+                <!-- Notifications will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Favorites Screen -->
+        <div class="screen with-nav" id="favorites">
+            <div class="header">
+                <span class="btn-back-header" onclick="goHome()">➔</span>
+                <span class="title">العقارات المحفوظة</span>
+            </div>
+            <div class="content" style="padding: 15px 0;">
+                <div id="favorites-list" class="properties-list">
+                    <!-- Saved properties will be here -->
+                </div>
             </div>
         </div>
 
@@ -1719,13 +1788,20 @@
             <div class="nav-item" id="nav-chat" onclick="showChatList()">
                 <div class="icon" style="position: relative;">
                     💬
-                    <span id="chat-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: #ff4757; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px;">0</span>
+                    <span id="chat-badge" class="badge" style="display: none;">0</span>
                 </div>
                 <span>الرسائل</span>
             </div>
+            <div class="nav-item" id="nav-notifications" onclick="showNotifications()">
+                <div class="icon" style="position: relative;">
+                    🔔
+                    <span id="notif-badge" class="badge" style="display: none;">0</span>
+                </div>
+                <span>التنبيهات</span>
+            </div>
             <div class="nav-item" id="nav-add" onclick="goAdd()">
                 <div class="icon">➕</div>
-                <span>أضف عقار</span>
+                <span>أضف</span>
             </div>
             <div class="nav-item" id="nav-profile" onclick="showScreen('auth')">
                 <div class="icon">👤</div>
@@ -1749,6 +1825,8 @@
         let selectedFiles = [];
         let propertiesData = [];
         let currentUserId = null;
+        let userReferenceProperty = null;
+        let savedPropertyIds = JSON.parse(localStorage.getItem('saved_properties') || '[]');
         let currentPage = 0;
         const pageSize = 5;
         let isLoading = false;
@@ -1760,7 +1838,9 @@
         let activeChatPropertyId = null;
         let messageSubscription = null;
         let globalChatSubscription = null;
+        let notifSubscription = null;
         let unreadCount = 0;
+        let unreadNotifs = 0;
         let notificationsEnabled = false;
 
         function debounceLoadData() {
@@ -1774,6 +1854,69 @@
             currentPage = 0;
             hasMore = true;
             loadData(false);
+        }
+
+        function calculateMatchScore(target) {
+            if (!userReferenceProperty || !target || userReferenceProperty.id === target.id) return 0;
+
+            let score = 0;
+
+            // 1. Region Score (50%)
+            if (target.governorate && userReferenceProperty.governorate === target.governorate) {
+                score += 30;
+                if (target.region && userReferenceProperty.region === target.region) {
+                    score += 20;
+                }
+            }
+
+            // Weights for Price and Area (25% each if both available)
+            let priceWeight = 25;
+            let areaWeight = 25;
+
+            if (!target.price || !userReferenceProperty.price) {
+                priceWeight = 0;
+                areaWeight = 50; 
+            }
+
+            // 2. Price Score
+            if (priceWeight > 0) {
+                const diff = Math.abs(target.price - userReferenceProperty.price) / userReferenceProperty.price;
+                if (diff <= 0.1) score += priceWeight;
+                else if (diff <= 0.3) score += (priceWeight * 0.6);
+                else if (diff <= 0.5) score += (priceWeight * 0.2);
+            }
+
+            // 3. Area Score
+            if (areaWeight > 0 && target.area > 0 && userReferenceProperty.area > 0) {
+                const diff = Math.abs(target.area - userReferenceProperty.area) / userReferenceProperty.area;
+                if (diff <= 0.1) score += areaWeight;
+                else if (diff <= 0.3) score += (areaWeight * 0.6);
+                else if (diff <= 0.5) score += (areaWeight * 0.2);
+            }
+
+            return Math.min(Math.round(score), 100);
+        }
+
+        async function loadUserReferenceProperty() {
+            if (!supabaseClient) return;
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                userReferenceProperty = null;
+                return;
+            }
+            
+            const { data } = await supabaseClient
+                .from('properties')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (data && data.length > 0) {
+                userReferenceProperty = data[0];
+            } else {
+                userReferenceProperty = null;
+            }
         }
 
         function resetFiltersAndReload() {
@@ -2140,6 +2283,16 @@
                     }]);
 
                 if (error) throw error;
+
+                // Trigger notification for receiver
+                const name = session.user.user_metadata?.full_name || "مستخدم";
+                await sendNotification(
+                    activeChatReceiverId, 
+                    'message', 
+                    `📩 رسالة جديدة من ${name}`, 
+                    content, 
+                    userId
+                );
             } catch (err) {
                 console.error("Send message error:", err);
                 alert("فشل إرسال الرسالة.");
@@ -2251,7 +2404,7 @@
             
             if (!error) {
                 unreadCount = count || 0;
-                updateUnreadBadge();
+                updateBadges();
             }
 
             if (globalChatSubscription) globalChatSubscription.unsubscribe();
@@ -2269,21 +2422,11 @@
                     // Increment unread count only if not in the active chat with this person
                     if (activeChatReceiverId !== msg.sender_id) {
                         unreadCount++;
-                        updateUnreadBadge();
+                        updateBadges();
                         showPushNotification("رسالة جديدة 💬", msg.content, msg.sender_id, msg.property_id);
                     }
                 })
                 .subscribe();
-        }
-
-        function updateUnreadBadge() {
-            const badge = document.getElementById("chat-badge");
-            if (unreadCount > 0) {
-                badge.innerText = unreadCount > 9 ? "9+" : unreadCount;
-                badge.style.display = "block";
-            } else {
-                badge.style.display = "none";
-            }
         }
 
         function showPushNotification(title, body, senderId, propertyId) {
@@ -2839,8 +2982,9 @@
             }
         }
 
-        function renderProperties(data, append = false) {
-            const list = document.getElementById("list");
+        function renderProperties(data, append = false, containerId = "list") {
+            const list = document.getElementById(containerId);
+            if (!list) return;
             if (!append) list.innerHTML = "";
 
             if (!append && data.length === 0) {
@@ -2870,13 +3014,18 @@
                     'reserved': { text: 'محجوز', class: 'status-reserved' }
                 };
                 const statusInfo = statusMap[p.status] || statusMap['available'];
+                const matchScore = calculateMatchScore(p);
+                const isSaved = savedPropertyIds.includes(p.id);
 
                 const cardHtml = `
                     <div class="property-card" onclick="viewProperty('${p.id}')">
                         <div class="image-container">
                             <img src="${imageUrl}" alt="${p.title}" referrerPolicy="no-referrer" onerror="this.src='https://img.icons8.com/plasticine/200/home.png'">
                             <span class="status-badge ${statusInfo.class}" style="position: absolute; top: 10px; left: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">${statusInfo.text}</span>
-                            ${isOwner ? '<span class="match-badge">90%</span>' : ''}
+                            ${!isOwner && matchScore > 0 ? `<span class="match-badge">🔝 مناسب ${matchScore}%</span>` : ''}
+                            <button class="btn-favorite ${isSaved ? 'active' : ''}" onclick="toggleFavorite(event, '${p.id}')">
+                                ${isSaved ? '❤️' : '🤍'}
+                            </button>
                         </div>
                         <div class="content">
                             <h4 class="title">
@@ -3204,10 +3353,28 @@
                 'reserved': { text: 'محجوز', class: 'status-reserved' }
             };
             const statusInfo = statusMap[p.status] || statusMap['available'];
+            const matchScore = calculateMatchScore(p);
+            
             document.getElementById("detail-title").innerHTML = `${p.title} <span class="status-badge ${statusInfo.class}" style="vertical-align: middle; margin-right: 10px;">${statusInfo.text}</span>`;
             
-            // Prominent Status in content
+            // Prominent Status & Match Score in content
+            let matchHtml = '';
+            if (matchScore > 0 && currentUserId && p.user_id !== currentUserId) {
+                matchHtml = `
+                    <div style="background: rgba(43, 182, 115, 0.1); padding: 12px; border-radius: 12px; border: 1px dashed var(--primary); display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;">
+                            ${matchScore}%
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">توافق ذكي مع عقارك</div>
+                            <div style="font-weight: bold; color: var(--primary);">العقار ده مناسب ليك بنسبة ${matchScore}%</div>
+                        </div>
+                    </div>
+                `;
+            }
+
             const statusHighlight = `
+                ${matchHtml}
                 <div style="background: var(--bg-body); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <div style="width: 40px; height: 40px; border-radius: 10px; background: ${p.status === 'sold' ? '#ff4757' : (p.status === 'available' ? 'var(--primary)' : 'var(--secondary)')}; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
                         ${p.status === 'sold' ? '🏷️' : (p.status === 'available' ? '✅' : '⏳')}
@@ -3275,6 +3442,22 @@
 
             amenitiesSection.style.display = hasAnyFeat ? "block" : "none";
 
+            // Update Favorite Btn in details
+            const favBtn = document.getElementById("detail-favorite-btn");
+            const isSavedDetail = savedPropertyIds.includes(p.id);
+            const favLabel = favBtn.querySelector('.label');
+            const favIcon = favBtn.querySelector('.heart-icon');
+            if (isSavedDetail) {
+                favBtn.style.background = "#ff4757";
+                favBtn.style.color = "white";
+                favLabel.innerText = "محفوظ في المفضلة";
+            } else {
+                favBtn.style.background = "transparent";
+                favBtn.style.color = "#ff4757";
+                favLabel.innerText = "حفظ في المفضلة";
+            }
+            activeChatPropertyId = p.id; // Ensure current ID is set for favorite logic
+
             // Contact section logic
             const callBtn = document.getElementById("call-btn");
             const whatsappBtn = document.getElementById("whatsapp-btn");
@@ -3299,6 +3482,7 @@
 
             const chatBtn = document.getElementById("chat-btn");
             const rateUserBtn = document.getElementById("rate-user-btn");
+            const interestBtn = document.getElementById("interest-btn");
             const noContactText = document.getElementById("no-contact-text");
 
             if (p.phone) {
@@ -3339,17 +3523,270 @@
             if (supabaseClient) {
                 try {
                     await supabaseClient.auth.getSession();
+                    await loadUserReferenceProperty();
                     updateFilterOptions();
                     
                     // Init Notifications
                     initNotifications();
                     initGlobalChatSubscription();
+                    initNotifSubscription();
+                    checkMatchOffer();
                 } catch (e) {
                     console.error("Session check failed", e);
                 }
             }
             showLoading(false);
             goHome();
+        }
+
+        async function initNotifSubscription() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return;
+            
+            if (notifSubscription) notifSubscription.unsubscribe();
+            
+            notifSubscription = supabaseClient
+                .channel(`notifs:${session.user.id}`)
+                .on('postgres_changes', { 
+                    event: 'INSERT', 
+                    schema: 'public', 
+                    table: 'notifications',
+                    filter: `user_id=eq.${session.user.id}`
+                }, (payload) => {
+                    unreadNotifs++;
+                    updateBadges();
+                    showLocalPush(payload.new);
+                })
+                .subscribe();
+            
+            loadNotificationsCount();
+        }
+
+        async function loadNotificationsCount() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return;
+            
+            const { count } = await supabaseClient
+                .from('notifications')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', session.user.id)
+                .eq('is_read', false);
+            
+            unreadNotifs = count || 0;
+            updateBadges();
+        }
+
+        function updateBadges() {
+            const chatBadge = document.getElementById("chat-badge");
+            const notifBadge = document.getElementById("notif-badge");
+            
+            if (chatBadge) {
+                chatBadge.innerText = unreadCount;
+                chatBadge.style.display = unreadCount > 0 ? "block" : "none";
+            }
+            
+            if (notifBadge) {
+                notifBadge.innerText = unreadNotifs;
+                notifBadge.style.display = unreadNotifs > 0 ? "block" : "none";
+            }
+        }
+
+        async function showNotifications() {
+            showScreen("notifications");
+            const list = document.getElementById("notifications-list");
+            list.innerHTML = `<div style="text-align: center; padding: 40px; color: #999;">جاري تحميل التنبيهات... ⏳</div>`;
+            
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return;
+
+            const { data, error } = await supabaseClient
+                .from('notifications')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .order('created_at', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                list.innerHTML = `<div style="text-align: center; padding: 80px 20px;">
+                    <div style="font-size: 50px; margin-bottom: 20px;">🔔</div>
+                    <p style="color: #999;">لا توجد تنبيهات حالياً</p>
+                </div>`;
+                return;
+            }
+
+            list.innerHTML = "";
+            data.forEach(n => {
+                const iconMap = {
+                    'message': { icon: '📩', class: 'notif-msg' },
+                    'interest': { icon: '🔄', class: 'notif-interest' },
+                    'match': { icon: '⭐', class: 'notif-match' }
+                };
+                const config = iconMap[n.type] || { icon: '🔔', class: 'notif-msg' };
+                const time = new Date(n.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                
+                const html = `
+                    <div class="notification-item ${n.is_read ? '' : 'unread'}" onclick="handleNotificationClick('${n.id}', '${n.type}', '${n.data}')">
+                        <div class="notif-icon ${config.class}">${config.icon}</div>
+                        <div class="notif-content">
+                            <div class="notif-title">${n.title}</div>
+                            <div class="notif-text">${n.content}</div>
+                            <div class="notif-time">${time}</div>
+                        </div>
+                        ${!n.is_read ? '<div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary); margin-top: 10px;"></div>' : ''}
+                    </div>
+                `;
+                list.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        async function sendNotification(userId, type, title, content, data = "") {
+            if (!supabaseClient) return;
+            await supabaseClient.from('notifications').insert([{
+                user_id: userId,
+                type: type,
+                title: title,
+                content: content,
+                data: data,
+                is_read: false
+            }]);
+        }
+
+        async function handleNotificationClick(notifId, type, data) {
+            await supabaseClient.from('notifications').update({ is_read: true }).eq('id', notifId);
+            unreadNotifs = Math.max(0, unreadNotifs - 1);
+            updateBadges();
+            
+            if (type === 'message') {
+                showChatList();
+            } else if (type === 'interest' || type === 'match') {
+                if (data) viewProperty(data);
+            }
+        }
+
+        async function markAllNotificationsRead() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return;
+            await supabaseClient.from('notifications').update({ is_read: true }).eq('user_id', session.user.id);
+            unreadNotifs = 0;
+            updateBadges();
+            showNotifications();
+        }
+
+        async function expressInterest(propertyId, ownerId) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return alert("يرجى تسجيل الدخول أولاً");
+            if (session.user.id === ownerId) return alert("هذا عقارك الخاص!");
+
+            const property = propertiesData.find(p => p.id === propertyId);
+            const title = "🔄 شخص مهتم بعقارك";
+            const content = `مستخدم مهتم بـ "${property.title}"، تواصل معه الآن!`;
+            
+            await sendNotification(ownerId, 'interest', title, content, propertyId);
+            alert("تم إرسال إشعار لاهتمامك لصاحب العقار ✅");
+        }
+
+        async function checkMatchOffer() {
+            if (!userReferenceProperty || !currentUserId) return;
+            
+            const topMatch = propertiesData
+                .filter(p => p.user_id !== currentUserId)
+                .map(p => ({ ...p, score: calculateMatchScore(p) }))
+                .filter(p => p.score >= 93) // High threshold for "Top Match"
+                .sort((a, b) => b.score - a.score)[0];
+            
+            if (topMatch) {
+                const title = "⭐ عرض توم لقطة لتبديلك!";
+                const content = `لقينا عقار في ${topMatch.region} يطابق مواصفاتك بنسبة ${topMatch.score}%!`;
+                
+                const lastMatchNotif = localStorage.getItem(`last_match_notif_${topMatch.id}`);
+                if (!lastMatchNotif) {
+                    await sendNotification(currentUserId, 'match', title, content, topMatch.id);
+                    localStorage.setItem(`last_match_notif_${topMatch.id}`, Date.now());
+                }
+            }
+        }
+
+        function showLocalPush(notif) {
+            if (notificationsEnabled) {
+                new Notification(notif.title, { body: notif.content, icon: 'logo.png' });
+            }
+        }
+
+        // --- Favorites Logic ---
+        function toggleFavorite(event, propertyId) {
+            if (event) event.stopPropagation();
+            
+            const idx = savedPropertyIds.indexOf(propertyId);
+            if (idx === -1) {
+                savedPropertyIds.push(propertyId);
+            } else {
+                savedPropertyIds.splice(idx, 1);
+            }
+            
+            localStorage.setItem('saved_properties', JSON.stringify(savedPropertyIds));
+            
+            // Re-render only relevant parts if needed, or just update UI
+            if (event) {
+                const btn = event.currentTarget;
+                btn.classList.toggle('active');
+                btn.innerHTML = btn.classList.contains('active') ? '❤️' : '🤍';
+            }
+        }
+
+        function toggleFavoriteFromDetails() {
+            const propertyId = activeChatPropertyId; // Details uses this as current property ID effectively
+            if (!propertyId) return;
+            
+            const btn = document.getElementById("detail-favorite-btn");
+            const label = btn.querySelector('.label');
+            const icon = btn.querySelector('.heart-icon');
+            
+            const idx = savedPropertyIds.indexOf(propertyId);
+            if (idx === -1) {
+                savedPropertyIds.push(propertyId);
+                btn.style.background = "#ff4757";
+                btn.style.color = "white";
+                label.innerText = "محفوظ في المفضلة";
+                icon.innerText = "❤️";
+            } else {
+                savedPropertyIds.splice(idx, 1);
+                btn.style.background = "transparent";
+                btn.style.color = "#ff4757";
+                label.innerText = "حفظ في المفضلة";
+                icon.innerText = "❤️";
+            }
+            
+            localStorage.setItem('saved_properties', JSON.stringify(savedPropertyIds));
+            renderProperties(propertiesData); // Update home list too
+        }
+
+        async function showFavorites() {
+            showScreen("favorites");
+            const list = document.getElementById("favorites-list");
+            list.innerHTML = `<div style="text-align: center; padding: 40px; color: #999;">جاري تحميل المفضلة... ⏳</div>`;
+
+            if (savedPropertyIds.length === 0) {
+                list.innerHTML = `<div style="text-align: center; padding: 80px 20px;">
+                    <div style="font-size: 50px; margin-bottom: 20px;">❤️</div>
+                    <p style="color: #999;">لا توجد عقارات محفوظة حالياً</p>
+                    <button onclick="goHome()" style="margin-top: 20px; background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer;">استكشف العقارات</button>
+                </div>`;
+                return;
+            }
+
+            // Fetch actual property data for these IDs
+            const { data, error } = await supabaseClient
+                .from('properties')
+                .select('*')
+                .in('id', savedPropertyIds);
+
+            if (error || !data || data.length === 0) {
+                list.innerHTML = `<div style="text-align: center; padding: 80px 20px;">
+                    <p style="color: #999;">حدث خطأ أو أن العقارات لم تعد موجودة</p>
+                </div>`;
+                return;
+            }
+
+            renderProperties(data, false, "favorites-list");
         }
 
         // Initial check for user and load home screen
