@@ -85,6 +85,10 @@
             display: block;
         }
 
+        .screen.with-nav {
+            padding-bottom: 70px;
+        }
+
         /* Loading Overlay */
         #loading-overlay {
             position: fixed;
@@ -863,12 +867,40 @@
             <div id="ptr-indicator">جاري التحديث... 🔄</div>
             <div class="header">
                 <span class="title">القاهرة</span>
-                <span class="search-icon">🔍</span>
+                <span class="search-icon" onclick="document.getElementById('search-input').focus()">🔍</span>
             </div>
 
             <div class="banner">
                 <p>ابحث وابدأ تبديل عقارك الآن</p>
                 <button class="btn-add" onclick="goAdd()">ضيف عقارك +</button>
+            </div>
+
+            <div class="search-filters" style="padding: 15px; background: var(--bg-card); margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+                <div class="search-container" style="display: flex; align-items: center; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 12px; padding: 8px 12px; margin-bottom: 12px;">
+                    <span style="color: var(--text-secondary);">🔍</span>
+                    <input type="text" id="search-input" placeholder="ابحث بالعنوان أو الوصف..." style="background: transparent; border: none; outline: none; margin-right: 10px; width: 100%; color: var(--text-primary); font-size: 14px;" oninput="debounceLoadData()">
+                </div>
+                
+                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                    <select id="filter-gov" onchange="resetAndLoadData()" style="flex: 1; padding: 8px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-size: 13px;">
+                        <option value="">كل المحافظات</option>
+                    </select>
+                    <select id="filter-region" onchange="resetAndLoadData()" style="flex: 1; padding: 8px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-size: 13px;">
+                        <option value="">كل المناطق</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); cursor: pointer;">
+                        <input type="checkbox" id="filter-balcony" onchange="resetAndLoadData()" style="width: auto;"> عقار للبيع
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); cursor: pointer;">
+                        <input type="checkbox" id="filter-parking" onchange="resetAndLoadData()" style="width: auto;"> عقار للايجار
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); cursor: pointer;">
+                        <input type="checkbox" id="filter-furnished" onchange="resetAndLoadData()" style="width: auto;"> مفروش
+                    </label>
+                </div>
             </div>
 
             <div class="properties-list" id="list">
@@ -891,22 +923,55 @@
                 <input type="file" id="image" style="display: none;">
 
                 <div class="form-inputs">
-                    <input id="title" placeholder="اسم العقار">
-                    <input id="location" placeholder="الموقع">
-                    <input id="area" placeholder="المساحة">
-                    <input id="rooms" placeholder="عدد الغرف">
+                    <input id="title" placeholder="عنوان الإعلان">
+                    <select id="gov" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); margin-bottom: 10px; font-size: 14px;">
+                        <option value="">اختر المحافظة</option>
+                        <option value="القاهرة">القاهرة</option>
+                        <option value="الجيزة">الجيزة</option>
+                        <option value="الإسكندرية">الإسكندرية</option>
+                        <option value="القليوبية">القليوبية</option>
+                        <option value="الشرقية">الشرقية</option>
+                        <option value="المنوفية">المنوفية</option>
+                        <option value="الغربية">الغربية</option>
+                        <option value="الدقهلية">الدقهلية</option>
+                        <option value="البحيرة">البحيرة</option>
+                        <option value="دمياط">دمياط</option>
+                        <option value="بورسعيد">بورسعيد</option>
+                        <option value="الإسماعيلية">الإسماعيلية</option>
+                        <option value="السويس">السويس</option>
+                        <option value="كفر الشيخ">كفر الشيخ</option>
+                        <option value="مطروح">مطروح</option>
+                        <option value="الفيوم">الفيوم</option>
+                        <option value="بني سويف">بني سويف</option>
+                        <option value="المنيا">المنيا</option>
+                        <option value="أسيوط">أسيوط</option>
+                        <option value="سوهاج">سوهاج</option>
+                        <option value="قنا">قنا</option>
+                        <option value="الأقصر">الأقصر</option>
+                        <option value="أسوان">أسوان</option>
+                        <option value="البحر الأحمر">البحر الأحمر</option>
+                        <option value="الوادي الجديد">الوادي الجديد</option>
+                        <option value="شمال سيناء">شمال سيناء</option>
+                        <option value="جنوب سيناء">جنوب سيناء</option>
+                    </select>
+                    <input id="region" placeholder="المنطقة (حي، شارع...)">
+                    <input id="location" placeholder="العنوان بالتفصيل">
+                    <div style="display: flex; gap: 10px;">
+                        <input id="area" placeholder="المساحة م²" style="flex: 1;">
+                        <input id="rooms" placeholder="الغرف" style="flex: 1;">
+                    </div>
                     <input id="phone" type="tel" placeholder="رقم الهاتف للتواصل">
-                    <textarea id="notes" placeholder="ملاحظات إضافية عن العقار..."></textarea>
+                    <textarea id="notes" placeholder="وصف إضافي عن العقار..."></textarea>
                 </div>
 
                 <div style="margin-bottom: 20px;">
-                    <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--text-secondary);">المميزات:</h4>
+                    <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--text-secondary);">نوع العقار والمميزات:</h4>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
-                            <input type="checkbox" id="feat-balcony" style="width: auto; margin: 0;"> بلكونة
+                            <input type="checkbox" id="feat-balcony" style="width: auto; margin: 0;"> عقار للبيع
                         </label>
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
-                            <input type="checkbox" id="feat-parking" style="width: auto; margin: 0;"> موقف سيارات
+                            <input type="checkbox" id="feat-parking" style="width: auto; margin: 0;"> عقار للايجار
                         </label>
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
                             <input type="checkbox" id="feat-furnished" style="width: auto; margin: 0;"> مفروش
@@ -965,6 +1030,22 @@
             </div>
         </div>
 
+        <!-- Bottom Navigation Bar -->
+        <div class="bottom-nav" id="main-nav">
+            <div class="nav-item active" id="nav-home" onclick="goHome()">
+                <div class="icon">🏠</div>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item" id="nav-add" onclick="goAdd()">
+                <div class="icon">➕</div>
+                <span>أضف عقار</span>
+            </div>
+            <div class="nav-item" id="nav-profile" onclick="showScreen('auth')">
+                <div class="icon">👤</div>
+                <span>حسابي</span>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -984,11 +1065,62 @@
         const pageSize = 5;
         let isLoading = false;
         let hasMore = true;
+        let searchTimeout = null;
+
+        function debounceLoadData() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                resetAndLoadData();
+            }, 600);
+        }
+
+        function resetAndLoadData() {
+            currentPage = 0;
+            hasMore = true;
+            loadData(false);
+        }
 
         // Function to show/hide loading overlay
         function showLoading(show) {
             const overlay = document.getElementById('loading-overlay');
             if (overlay) overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        function updateFilterOptions() {
+            if (!supabaseClient) return;
+            
+            supabaseClient.from('properties').select('governorate, region')
+                .then(({ data, error }) => {
+                    if (error) throw error;
+                    
+                    const govs = [...new Set(data.map(item => item.governorate).filter(Boolean))].sort();
+                    const regions = [...new Set(data.map(item => item.region).filter(Boolean))].sort();
+                    
+                    const govSelect = document.getElementById("filter-gov");
+                    const regionSelect = document.getElementById("filter-region");
+                    
+                    const currentGov = govSelect.value;
+                    const currentRegion = regionSelect.value;
+                    
+                    govSelect.innerHTML = '<option value="">كل المحافظات</option>';
+                    govs.forEach(gov => {
+                        const opt = document.createElement("option");
+                        opt.value = gov;
+                        opt.innerText = gov;
+                        if (gov === currentGov) opt.selected = true;
+                        govSelect.appendChild(opt);
+                    });
+                    
+                    regionSelect.innerHTML = '<option value="">كل المناطق</option>';
+                    regions.forEach(reg => {
+                        const opt = document.createElement("option");
+                        opt.value = reg;
+                        opt.innerText = reg;
+                        if (reg === currentRegion) opt.selected = true;
+                        regionSelect.appendChild(opt);
+                    });
+                })
+                .catch(err => console.error("Filter update error:", err));
         }
 
         // --- Screen Navigation ---
@@ -1069,15 +1201,7 @@
 
         // --- Filters ---
         function applyFilters() {
-            loadData(false);
-        }
-
-        let searchTimeout;
-        function debounceSearch() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                loadData(false);
-            }, 500);
+            resetAndLoadData();
         }
 
         // --- Profile Management ---
@@ -1295,10 +1419,36 @@
                 const from = currentPage * pageSize;
                 const to = from + pageSize - 1;
 
-                let query = supabaseClient
-                    .from('properties')
-                    .select("*")
-                    .order('created_at', { ascending: false });
+                let query = supabaseClient.from('properties').select("*");
+
+                // Apply Filters
+                const searchTerm = document.getElementById("search-input").value;
+                const filterBalcony = document.getElementById("filter-balcony").checked;
+                const filterParking = document.getElementById("filter-parking").checked;
+                const filterFurnished = document.getElementById("filter-furnished").checked;
+                const filterGov = document.getElementById("filter-gov").value;
+                const filterReg = document.getElementById("filter-region").value;
+
+                if (searchTerm) {
+                    query = query.or(`title.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+                }
+                if (filterGov) {
+                    query = query.eq('governorate', filterGov);
+                }
+                if (filterReg) {
+                    query = query.eq('region', filterReg);
+                }
+                if (filterBalcony) {
+                    query = query.eq('has_balcony', true);
+                }
+                if (filterParking) {
+                    query = query.eq('has_parking', true);
+                }
+                if (filterFurnished) {
+                    query = query.eq('is_furnished', true);
+                }
+
+                query = query.order('created_at', { ascending: false });
 
                 const { data, error } = await query.range(from, to);
                 
@@ -1412,11 +1562,16 @@
                         <div class="content">
                             <h4 class="title">
                                 <span>${p.title}</span>
-                                <span class="location-icon">📍 ${p.location || 'القاهرة'}</span>
+                                <span class="location-icon">📍 ${p.governorate || ''} ${p.region ? '- ' + p.region : ''}</span>
                             </h4>
                             <div class="details-info">
-                                <span>📏 ${p.area} م²</span>
-                                <span>🛏️ ${p.rooms} غرف</span>
+                                <span style="color: var(--primary); font-weight: bold; margin-bottom: 5px; display: block;">
+                                    ${p.has_balcony ? 'للبيع' : (p.has_parking ? 'للإيجار' : '')}
+                                </span>
+                                <div>
+                                    <span>📏 ${p.area} م²</span>
+                                    <span>🛏️ ${p.rooms} غرف</span>
+                                </div>
                             </div>
                         </div>
                         ${isOwner ? `
@@ -1479,6 +1634,8 @@
                     rooms: parseInt(document.getElementById("rooms").value),
                     phone: document.getElementById("phone").value,
                     description: document.getElementById("notes").value,
+                    governorate: document.getElementById("gov").value,
+                    region: document.getElementById("region").value,
                     has_balcony: document.getElementById("feat-balcony").checked,
                     has_parking: document.getElementById("feat-parking").checked,
                     is_furnished: document.getElementById("feat-furnished").checked,
@@ -1497,13 +1654,19 @@
                     document.getElementById("rooms").value = "";
                     document.getElementById("phone").value = "";
                     document.getElementById("notes").value = "";
+                    document.getElementById("gov").value = "";
+                    document.getElementById("region").value = "";
                     document.getElementById("image").value = "";
+                    document.getElementById("feat-balcony").checked = false;
+                    document.getElementById("feat-parking").checked = false;
+                    document.getElementById("feat-furnished").checked = false;
                     
+                    updateFilterOptions();
                     goHome();
                 }
             } catch (err) {
                 console.error("Add Property error:", err);
-                alert("حدث خطأ عير متوقع");
+                alert("حدث خطأ غير متوقع");
             } finally {
                 // Revert button and close loading overlay
                 saveBtn.innerText = originalBtnText;
@@ -1529,6 +1692,7 @@
                 alert("حدث خطأ أو ليس لديك صلاحية لحذف هذا العقار: " + error.message);
             } else {
                 alert("تم الحذف بنجاح!");
+                updateFilterOptions();
                 loadData();
             }
         }
@@ -1549,7 +1713,7 @@
             // Fill detail screen fields
             document.getElementById("detail-image").src = imageUrl;
             document.getElementById("detail-title").innerText = p.title;
-            document.getElementById("detail-location").innerText = p.location;
+            document.getElementById("detail-location").innerText = `${p.governorate || ''} ${p.region ? '- ' + p.region : ''} ${p.location ? '(' + p.location + ')' : ''}`;
             document.getElementById("detail-area").innerText = `${p.area} م²`;
             document.getElementById("detail-rooms").innerText = `${p.rooms} غرف`;
 
@@ -1570,11 +1734,11 @@
             let hasAnyFeat = false;
 
             if (p.has_balcony) {
-                amenitiesList.innerHTML += `<div class="amenity-tag"><span>🌅</span> بلكونة</div>`;
+                amenitiesList.innerHTML += `<div class="amenity-tag"><span>💰</span> عقار للبيع</div>`;
                 hasAnyFeat = true;
             }
             if (p.has_parking) {
-                amenitiesList.innerHTML += `<div class="amenity-tag"><span>🚗</span> موقف سيارات</div>`;
+                amenitiesList.innerHTML += `<div class="amenity-tag"><span>🔑</span> عقار للايجار</div>`;
                 hasAnyFeat = true;
             }
             if (p.is_furnished) {
@@ -1591,7 +1755,16 @@
 
             if (p.phone) {
                 callBtn.href = `tel:${p.phone}`;
-                whatsappBtn.href = `https://wa.me/${p.phone}`;
+                
+                const type = p.has_balcony ? 'للبيع' : (p.has_parking ? 'للإيجار' : 'غير محدد');
+                const message = `أهلاً بك، أنا مهتم بعقارك الذي قمت بنشره في تطبيق "بدلها":\n` +
+                                `🏠 العنوان: ${p.title}\n` +
+                                `📍 المكان: ${p.governorate || ''} - ${p.region || ''}\n` +
+                                `📏 المساحة: ${p.area} م²\n` +
+                                `🛏️ الغرف: ${p.rooms}\n` +
+                                `📝 النوع: ${type}`;
+                
+                whatsappBtn.href = `https://wa.me/${p.phone}?text=${encodeURIComponent(message)}`;
                 callBtn.style.display = "block";
                 whatsappBtn.style.display = "block";
                 noContactText.style.display = "none";
@@ -1609,6 +1782,7 @@
             if (supabaseClient) {
                 try {
                     await supabaseClient.auth.getSession();
+                    updateFilterOptions();
                 } catch (e) {
                     console.error("Session check failed", e);
                 }
