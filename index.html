@@ -913,7 +913,7 @@
         <div class="screen with-nav" id="add">
             <div class="header" style="justify-content: flex-start;">
                 <span class="btn-back-header" onclick="goHome()">➔</span>
-                <span class="title">ضيف عقارك</span>
+                <span class="title" id="add-title">ضيف عقارك</span>
             </div>
 
             <div class="form-group">
@@ -956,6 +956,7 @@
                     </select>
                     <input id="region" placeholder="المنطقة (حي، شارع...)">
                     <input id="location" placeholder="العنوان بالتفصيل">
+                    <input id="price" type="number" placeholder="السعر (اختياري)">
                     <div style="display: flex; gap: 10px;">
                         <input id="area" placeholder="المساحة م²" style="flex: 1;">
                         <input id="rooms" placeholder="الغرف" style="flex: 1;">
@@ -1000,6 +1001,14 @@
                 <div class="location">
                     <span>📍</span>
                     <span id="detail-location"></span>
+                </div>
+
+                <div id="detail-price-container" style="margin-top: 15px; padding: 12px; background: rgba(43, 182, 115, 0.1); border-radius: 12px; border: 1px solid var(--primary); display: none; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">💰</span>
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-secondary);">السعر المطلوب</div>
+                        <div id="detail-price" style="font-size: 18px; font-weight: 700; color: var(--primary);"></div>
+                    </div>
                 </div>
 
                 <div class="details-card">
@@ -1062,6 +1071,7 @@
         const SUPABASE_URL = "https://arycfnlqkgrqxyqixcpa.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyeWNmbmxxa2dycXh5cWl4Y3BhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTQwNjgsImV4cCI6MjA5MjI5MDA2OH0.3olrFQ-tTNIHgvtExloyCyqqm0xw_aWhokHfxWhyDD8";
         const supabaseClient = (typeof supabase !== 'undefined') ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        let editingPropertyId = null;
 
         let propertiesData = [];
         let currentUserId = null;
@@ -1196,6 +1206,27 @@
         async function goAdd() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
+                editingPropertyId = null;
+                document.getElementById("add-title").innerText = "ضيف عقارك";
+                document.getElementById("save-btn").innerText = "نشر العقار";
+                
+                // Reset fields
+                document.getElementById("title").value = "";
+                document.getElementById("location").value = "";
+                document.getElementById("price").value = "";
+                document.getElementById("area").value = "";
+                document.getElementById("rooms").value = "";
+                document.getElementById("phone").value = "";
+                document.getElementById("notes").value = "";
+                document.getElementById("gov").value = "";
+                document.getElementById("region").value = "";
+                document.getElementById("image").value = "";
+                document.getElementById("upload-hint").innerText = "+ أضف صور";
+                document.getElementById("upload-hint").style.color = "inherit";
+                document.getElementById("feat-balcony").checked = false;
+                document.getElementById("feat-parking").checked = false;
+                document.getElementById("feat-furnished").checked = false;
+
                 showScreen("add");
             } else {
                 alert("يرجى تسجيل الدخول أو إنشاء حساب لإضافة عقار.");
@@ -1569,8 +1600,9 @@
                                 <span class="location-icon">📍 ${p.governorate || ''} ${p.region ? '- ' + p.region : ''}</span>
                             </h4>
                             <div class="details-info">
-                                <span style="color: var(--primary); font-weight: bold; margin-bottom: 5px; display: block;">
-                                    ${p.has_balcony ? 'للبيع' : (p.has_parking ? 'للإيجار' : '')}
+                                <span style="color: var(--primary); font-weight: bold; margin-bottom: 5px; display: block; display: flex; justify-content: space-between; align-items: center;">
+                                    <span>${p.has_balcony ? 'للبيع' : (p.has_parking ? 'للإيجار' : '')}</span>
+                                    ${p.price ? `<span style="font-size: 13px; background: rgba(43, 182, 115, 0.1); padding: 2px 8px; border-radius: 5px;">${Number(p.price).toLocaleString()} ج.م</span>` : ''}
                                 </span>
                                 <div>
                                     <span>📏 ${p.area} م²</span>
@@ -1600,40 +1632,49 @@
             const userId = session.user.id;
 
             const file = document.getElementById("image").files[0];
-            if (!file) {
-                alert("اختر صورة");
-                return;
-            }
 
             // Disable button and show loading state
             const saveBtn = document.getElementById("save-btn");
             const originalBtnText = saveBtn.innerText;
-            saveBtn.innerText = "جاري نشر العقار... ⏳";
+            saveBtn.innerText = editingPropertyId ? "جاري الحفظ... ⏳" : "جاري نشر العقار... ⏳";
             saveBtn.style.pointerEvents = "none";
             saveBtn.style.opacity = "0.7";
             showLoading(true);
 
             try {
-                // Clean file name and upload image
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Date.now()}.${fileExt}`;
-                const { error: uploadError } = await supabaseClient.storage.from('images').upload(fileName, file, {
-                    contentType: file.type
-                });
+                let imageUrl = null;
 
-                if (uploadError) {
-                    let errorMsg = "خطأ في رفع الصورة! ";
-                    if (uploadError.message.includes("row-level security policy")) {
-                        errorMsg += "\n\nسبب المشكلة: كود RLS في Supabase يمنع الرفع.\nالحل: اذهب إلى Storage -> images -> Policies وأضف صلاحية INSERT للمستخدمين.";
-                    } else if (uploadError.message.includes("Bucket not found")) {
-                        errorMsg += "تأكد من إنشاء Bucket باسم 'images' وجعله Public في Supabase.";
-                    } else {
-                        errorMsg += uploadError.message;
+                // Handle Image Upload if file selected
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${Date.now()}.${fileExt}`;
+                    const { error: uploadError } = await supabaseClient.storage.from('images').upload(fileName, file, {
+                        contentType: file.type
+                    });
+
+                    if (uploadError) {
+                        let errorMsg = "خطأ في رفع الصورة! ";
+                        if (uploadError.message.includes("row-level security policy")) {
+                            errorMsg += "\n\nسبب المشكلة: كود RLS في Supabase يمنع الرفع.\nالحل: اذهب إلى Storage -> images -> Policies وأضف صلاحية INSERT للمستخدمين.";
+                        } else if (uploadError.message.includes("Bucket not found")) {
+                            errorMsg += "تأكد من إنشاء Bucket باسم 'images' وجعله Public في Supabase.";
+                        } else {
+                            errorMsg += uploadError.message;
+                        }
+                        alert(errorMsg);
+                        console.error("Storage Upload Error:", uploadError);
+                        
+                        saveBtn.innerText = originalBtnText;
+                        saveBtn.style.pointerEvents = "auto";
+                        saveBtn.style.opacity = "1";
+                        showLoading(false);
+                        return;
                     }
-                    alert(errorMsg);
-                    console.error("Storage Upload Error:", uploadError);
-                    
-                    // Reset button state on error
+
+                    const { data: urlData } = supabaseClient.storage.from('images').getPublicUrl(fileName);
+                    imageUrl = urlData.publicUrl;
+                } else if (!editingPropertyId) {
+                    alert("اختر صورة");
                     saveBtn.innerText = originalBtnText;
                     saveBtn.style.pointerEvents = "auto";
                     saveBtn.style.opacity = "1";
@@ -1641,15 +1682,12 @@
                     return;
                 }
 
-                // Get public URL of the image
-                const { data: urlData } = supabaseClient.storage.from('images').getPublicUrl(fileName);
-
-                // Insert property data
-                const { error: insertError } = await supabaseClient.from('properties').insert([{
+                const propertyData = {
                     title: document.getElementById("title").value,
                     location: document.getElementById("location").value,
                     area: parseInt(document.getElementById("area").value) || 0,
                     rooms: parseInt(document.getElementById("rooms").value) || 0,
+                    price: parseInt(document.getElementById("price").value) || null,
                     phone: document.getElementById("phone").value,
                     description: document.getElementById("notes").value,
                     governorate: document.getElementById("gov").value,
@@ -1657,30 +1695,34 @@
                     has_balcony: document.getElementById("feat-balcony").checked,
                     has_parking: document.getElementById("feat-parking").checked,
                     is_furnished: document.getElementById("feat-furnished").checked,
-                    image_url: urlData.publicUrl,
                     user_id: userId
-                }]);
+                };
 
-                if (insertError) {
-                    alert("خطأ في إضافة العقار: " + insertError.message);
+                if (imageUrl) {
+                    propertyData.image_url = imageUrl;
+                }
+
+                let resultError;
+
+                if (editingPropertyId) {
+                    // Update existing property
+                    const { error } = await supabaseClient
+                        .from('properties')
+                        .update(propertyData)
+                        .eq('id', editingPropertyId);
+                    resultError = error;
                 } else {
-                    alert("تم الإضافة ✅");
-                    // Clear input fields
-                    document.getElementById("title").value = "";
-                    document.getElementById("location").value = "";
-                    document.getElementById("area").value = "";
-                    document.getElementById("rooms").value = "";
-                    document.getElementById("phone").value = "";
-                    document.getElementById("notes").value = "";
-                    document.getElementById("gov").value = "";
-                    document.getElementById("region").value = "";
-                    document.getElementById("image").value = "";
-                    document.getElementById("upload-hint").innerText = "+ أضف صور";
-                    document.getElementById("upload-hint").style.color = "inherit";
-                    document.getElementById("feat-balcony").checked = false;
-                    document.getElementById("feat-parking").checked = false;
-                    document.getElementById("feat-furnished").checked = false;
-                    
+                    // Insert new property
+                    const { error } = await supabaseClient
+                        .from('properties')
+                        .insert([propertyData]);
+                    resultError = error;
+                }
+
+                if (resultError) {
+                    alert("خطأ: " + resultError.message);
+                } else {
+                    alert(editingPropertyId ? "تم التعديل بنجاح ✅" : "تم الإضافة ✅");
                     updateFilterOptions();
                     goHome();
                 }
@@ -1770,10 +1812,35 @@
             }
         }
 
-        // --- Edit Property (Stub) ---
+        // --- Edit Property ---
         function openEditProperty(event, propertyId) {
             event.stopPropagation();
-            alert("وظيفة تعديل العقار غير متاحة في هذا التصميم المحدث حالياً.");
+            const p = propertiesData.find(prop => String(prop.id) === String(propertyId));
+            if (!p) return;
+
+            editingPropertyId = propertyId;
+            document.getElementById("add-title").innerText = "تعديل العقار";
+            document.getElementById("save-btn").innerText = "حفظ التعديلات";
+
+            // Fill fields
+            document.getElementById("title").value = p.title || "";
+            document.getElementById("location").value = p.location || "";
+            document.getElementById("price").value = p.price || "";
+            document.getElementById("area").value = p.area || "";
+            document.getElementById("rooms").value = p.rooms || "";
+            document.getElementById("phone").value = p.phone || "";
+            document.getElementById("notes").value = p.description || "";
+            document.getElementById("gov").value = p.governorate || "";
+            document.getElementById("region").value = p.region || "";
+            document.getElementById("feat-balcony").checked = p.has_balcony || false;
+            document.getElementById("feat-parking").checked = p.has_parking || false;
+            document.getElementById("feat-furnished").checked = p.is_furnished || false;
+
+            // Image hint
+            document.getElementById("upload-hint").innerText = "يمكنك اختيار صورة جديدة لتغييرها";
+            document.getElementById("upload-hint").style.color = "var(--secondary)";
+
+            showScreen("add");
         }
 
         // --- View Property Details ---
@@ -1789,6 +1856,16 @@
             document.getElementById("detail-location").innerText = `${p.governorate || ''} ${p.region ? '- ' + p.region : ''} ${p.location ? '(' + p.location + ')' : ''}`;
             document.getElementById("detail-area").innerText = `${p.area} م²`;
             document.getElementById("detail-rooms").innerText = `${p.rooms} غرف`;
+
+            // Price logic
+            const priceContainer = document.getElementById("detail-price-container");
+            const priceVal = document.getElementById("detail-price");
+            if (p.price) {
+                priceVal.innerText = `${Number(p.price).toLocaleString()} جنيه مصري`;
+                priceContainer.style.display = "flex";
+            } else {
+                priceContainer.style.display = "none";
+            }
 
             // Notes logic
             const notesSection = document.getElementById("notes-section");
