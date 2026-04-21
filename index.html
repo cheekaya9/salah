@@ -781,7 +781,7 @@
         <div class="screen active" id="splash">
             <div class="content" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center;">
                 <div style="margin-bottom: 30px;">
-                    <img src="https://picsum.photos/seed/realestate/400/400" alt="بدلها" style="width: 140px; height: 140px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);" referrerPolicy="no-referrer">
+                    <img src="logo.png" alt="بدلها" id="splash-logo" style="width: 140px; height: 140px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);" referrerPolicy="no-referrer" onerror="this.src='https://img.icons8.com/material-outlined/200/2BB673/home--v2.png'">
                 </div>
                 <h2 style="color: var(--text-secondary); font-size: 18px; margin-bottom: 50px; font-weight: 400;">بدل عقارك بسهولة مع</h2>
                 
@@ -918,9 +918,9 @@
 
             <div class="form-group">
                 <div class="image-upload" onclick="document.getElementById('image').click()">
-                    <span>+ أضف صور</span>
+                    <span id="upload-hint">+ أضف صور</span>
                 </div>
-                <input type="file" id="image" style="display: none;">
+                <input type="file" id="image" style="display: none;" onchange="document.getElementById('upload-hint').innerText = 'تم اختيار: ' + this.files[0].name; document.getElementById('upload-hint').style.color = 'var(--primary)';">
 
                 <div class="form-inputs">
                     <input id="title" placeholder="عنوان الإعلان">
@@ -980,6 +980,10 @@
                 </div>
 
                 <button class="btn-submit" id="save-btn" onclick="addProperty()">نشر العقار</button>
+                
+                <div style="margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
+                    <button onclick="runDiagnostic()" style="background: none; border: 1px solid var(--primary); color: var(--primary); width: 100%; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 12px;">🔍 فحص جاهزية النظام (اختبار فني)</button>
+                </div>
             </div>
         </div>
 
@@ -1618,20 +1622,34 @@
                 });
 
                 if (uploadError) {
-                    alert("خطأ في رفع الصورة! تأكد من إنشاء Bucket باسم 'images' في لوحة تحكم Supabase.");
+                    let errorMsg = "خطأ في رفع الصورة! ";
+                    if (uploadError.message.includes("row-level security policy")) {
+                        errorMsg += "\n\nسبب المشكلة: كود RLS في Supabase يمنع الرفع.\nالحل: اذهب إلى Storage -> images -> Policies وأضف صلاحية INSERT للمستخدمين.";
+                    } else if (uploadError.message.includes("Bucket not found")) {
+                        errorMsg += "تأكد من إنشاء Bucket باسم 'images' وجعله Public في Supabase.";
+                    } else {
+                        errorMsg += uploadError.message;
+                    }
+                    alert(errorMsg);
                     console.error("Storage Upload Error:", uploadError);
+                    
+                    // Reset button state on error
+                    saveBtn.innerText = originalBtnText;
+                    saveBtn.style.pointerEvents = "auto";
+                    saveBtn.style.opacity = "1";
+                    showLoading(false);
                     return;
                 }
 
                 // Get public URL of the image
-                const { data } = supabaseClient.storage.from('images').getPublicUrl(fileName);
+                const { data: urlData } = supabaseClient.storage.from('images').getPublicUrl(fileName);
 
                 // Insert property data
                 const { error: insertError } = await supabaseClient.from('properties').insert([{
                     title: document.getElementById("title").value,
                     location: document.getElementById("location").value,
-                    area: parseInt(document.getElementById("area").value),
-                    rooms: parseInt(document.getElementById("rooms").value),
+                    area: parseInt(document.getElementById("area").value) || 0,
+                    rooms: parseInt(document.getElementById("rooms").value) || 0,
                     phone: document.getElementById("phone").value,
                     description: document.getElementById("notes").value,
                     governorate: document.getElementById("gov").value,
@@ -1639,7 +1657,7 @@
                     has_balcony: document.getElementById("feat-balcony").checked,
                     has_parking: document.getElementById("feat-parking").checked,
                     is_furnished: document.getElementById("feat-furnished").checked,
-                    image_url: data.publicUrl,
+                    image_url: urlData.publicUrl,
                     user_id: userId
                 }]);
 
@@ -1657,6 +1675,8 @@
                     document.getElementById("gov").value = "";
                     document.getElementById("region").value = "";
                     document.getElementById("image").value = "";
+                    document.getElementById("upload-hint").innerText = "+ أضف صور";
+                    document.getElementById("upload-hint").style.color = "inherit";
                     document.getElementById("feat-balcony").checked = false;
                     document.getElementById("feat-parking").checked = false;
                     document.getElementById("feat-furnished").checked = false;
@@ -1666,14 +1686,67 @@
                 }
             } catch (err) {
                 console.error("Add Property error:", err);
-                alert("حدث خطأ غير متوقع");
+                alert("حدث خطأ غير متوقع: " + err.message);
             } finally {
-                // Revert button and close loading overlay
+                // Reset button state and hide loading
                 saveBtn.innerText = originalBtnText;
                 saveBtn.style.pointerEvents = "auto";
                 saveBtn.style.opacity = "1";
                 showLoading(false);
             }
+        }
+
+        // Global error handler to catch hidden bugs
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Global Error: ', msg, ' at line: ', lineNo);
+            alert("⚠️ تنبيه تقني: حدث خطأ في البرنامج.\nالرسالة: " + msg + "\nالسطر: " + lineNo);
+            return false;
+        };
+
+        // --- Diagnostic Test ---
+        function runDiagnostic() {
+            console.log("Diagnostic triggered");
+            alert("🚀 بدئ الاختبار الفني... انتظر رسالة التقرير");
+            
+            // Internal async function to handle the heavy lifting
+            (async () => {
+                try {
+                    if (!supabaseClient) throw new Error("Supabase Client is null");
+                    
+                    const { data: sessionData } = await supabaseClient.auth.getSession();
+                    const session = sessionData?.session;
+                    
+                    if (!session) {
+                        alert("❌ خطأ: يجب تسجيل الدخول أولاً قبل الفحص.");
+                        return;
+                    }
+
+                    showLoading(true);
+                    let report = "📊 نتائج الفحص:\n\n";
+
+                    // 1. Storage Test
+                    try {
+                        const { error } = await supabaseClient.storage.from('images').upload(`diag_${Date.now()}.txt`, new Blob(['test']));
+                        report += "✅ الستورج: مسموح بالرفع\n";
+                    } catch (e) {
+                        report += "❌ الستورج: " + e.message + "\n";
+                    }
+
+                    // 2. Database Test
+                    try {
+                        const { error } = await supabaseClient.from('properties').insert([{ title: 'TEST', area: 0, user_id: session.user.id }]).select();
+                        report += "✅ قاعدة البيانات: مسموح بالإدخال\n";
+                    } catch (e) {
+                        report += "❌ قاعدة البيانات: " + e.message + "\n";
+                    }
+
+                    showLoading(false);
+                    alert(report + "\nإذا رأيت علامات ✅، فالتطبيق جاهز تماماً.");
+                } catch (err) {
+                    showLoading(false);
+                    alert("❌ فشل الفحص: " + err.message);
+                }
+            })();
         }
 
         // --- Delete Property ---
